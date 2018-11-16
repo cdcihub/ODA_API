@@ -33,7 +33,7 @@ class RemoteException(Exception):
 
 class DispatcherAPI(object):
 
-    def __init__(self,instrument='mock',host='10.194.169.161',port=32784):
+    def __init__(self,instrument='mock',host='10.194.169.161',port=None):
 
         self.host=host
         self.port=port
@@ -60,8 +60,8 @@ class DispatcherAPI(object):
 
 
 
-    def _progess_bar(self):
-        print("\r %s the job is working remotely, please wait "%(next(self._progress_iter)),end='')
+    def _progess_bar(self,info=''):
+        print("\r %s the job is working remotely, please wait %s"%(next(self._progress_iter),info),end='')
 
 
     def request(self,parameters_dict,handle='run_analysis',url=None):
@@ -74,7 +74,7 @@ class DispatcherAPI(object):
         job_id = res.json()['job_monitor']['job_id']
 
         if query_status != 'done' and query_status != 'failed':
-            print ('the has been submitted on the remote server')
+            print ('the job has been submitted on the remote server')
 
         while query_status != 'done' and query_status != 'failed':
             parameters_dict['query_status']=query_status
@@ -82,14 +82,15 @@ class DispatcherAPI(object):
             res = requests.get("%s/%s" % (url,handle), params=parameters_dict)
             query_status =res.json()['query_status']
             job_id = res.json()['job_monitor']['job_id']
-
-            self._progess_bar()
+            info='status=%s - job_id=%s '%(query_status,job_id)
+            self._progess_bar(info=info)
 
 
             time.sleep(2)
 
         print("\r", end="")
-
+        print('')
+        print('')
         if  res.json()['exit_status']['status']!=0:
             self.failure_report(res)
 
@@ -99,6 +100,7 @@ class DispatcherAPI(object):
         #print('products', res.json()['products'].keys())
 
         if query_status != 'failed':
+
             print('query done succesfully!')
         else:
 
