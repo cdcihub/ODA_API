@@ -16,6 +16,10 @@ ISDC Data Centre for Astrophysics, Astronomy Department of the University of Gen
 
 Installation
 -------------------
+pip install future (if not already installed)
+
+pip install .
+or
 python setup.py install
  
 Documentation

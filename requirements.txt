@@ -1,3 +1,4 @@
 future
+requests
 astropy>=2.0.3
 json_tricks
